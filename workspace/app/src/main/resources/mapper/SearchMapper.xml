@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.app.mapper.SearchMapper">
+<!--        <select id="selectAll" resultType="questionDTO">-->
+<!--            SELECT QUESTION_ID, USER_ID, QUESTION_TITLE, QUESTION_CONTENT, QUESTION_REGISTER_DATETIME, QUESTION_IS_PUBLIC, QUESTION_LIKE_COUNT, DOCTOR_DEPARTMENT_TYPE, READ_COUNT-->
+<!--            FROM-->
+<!--            (-->
+<!--            SELECT ROWNUM R, P.USER_ID, QUESTION_TITLE, QUESTION_CONTENT, QUESTION_REGISTER_DATETIME, QUESTION_IS_PUBLIC, QUESTION_LIKE_COUNT, P.USER_NAME-->
+<!--            FROM TBL_QUESTION M JOIN TBL_USER P-->
+<!--            <foreach item="keyword" collection="search.keyword">-->
+<!--                <choose>-->
+<!--                    <when test="keyword.toString()">-->
+<!--                        QUESTION_TITLE LIKE '%'||#{search.keyword}||'%'-->
+<!--                    </when>-->
+<!--                </choose>-->
+<!--            </foreach>-->
+<!--        </select>-->
+
+    <select id="selectAll" resultType="questionDTO">
+        select QUESTION_ID, QUESTION_TITLE, QUESTION_CONTENT, QUESTION_REGISTER_DATETIME, QUESTION_IS_PUBLIC, QUESTION_LIKE_COUNT, DOCTOR_DEPARTMENT_TYPE, READ_COUNT, m.USER_ID, m.USER_NAME, m.USER_PROFILE_NAME
+        FROM QUESTION_ID q join TBL_USER m
+        on q.user_id = m.user_id
+        <if test="keyword != ''.toString()">
+            AND (QUESTION_TITLE like concat('%', #{keyword}, '%') or m.user_name like concat('%', #{keyword}, '%'))
+        </if>
+        order by board_register_date desc
+    </select>
+
+
+    <insert id="insert">
+        INSERT INTO HR.TBL_QUESTION
+        (QUESTION_ID, USER_ID, QUESTION_TITLE, QUESTION_CONTENT, QUESTION_REGISTER_DATETIME, QUESTION_IS_PUBLIC, QUESTION_LIKE_COUNT, DOCTOR_DEPARTMENT_TYPE, READ_COUNT)
+        VALUES(#{questionId}, #{userId}, #{questionTitle}, #{questionContent}, #{questionRegisterDatetime}, #{questionIsPublic}, #{questionLikeCount}, #{doctorDepartmentType}, #{readCount});
+    </insert>
+</mapper>
